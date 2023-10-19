@@ -1,2 +1,2 @@
 # Portfólio
- Queries SQL do projeto
+ Queries SQL 
