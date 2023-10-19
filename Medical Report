@@ -1,0 +1,107 @@
+
+--CONTEXTO:--
+
+-- Exibindo a tabela dos segurados dessa compania de seguros. A tabela é formada pelos seguintes campos:
+
+--- ID, age, sex, bmi (body mass index), children, smoker, region, charges ----
+
+
+
+
+--- 1 query: total de segurados ___
+
+SELECT * FROM medical.segurados;
+
+SELECT COUNT(*) AS total_segurados
+FROM medical.segurados;
+
+--- 2 query: Identificar a média de idade e de quantidade de filhos por sexo ---
+
+SELECT sex, ROUND (AVG (children),2) AS media_filhos, ROUND (AVG (age),2) AS media_idade
+FROM medical.segurados
+GROUP BY sex;
+
+--- 3 query: Todas as informacoes dos sugurados mais jovens e mais velhos---
+
+SELECT s.*
+FROM medical.segurados s
+JOIN (
+    SELECT
+        MIN(age) AS idade_minima,
+        MAX(age) AS idade_maxima
+    FROM medical.segurados
+) AS idades
+ON s.age = idades.idade_minima OR s.age = idades.idade_maxima;
+
+
+SELECT 
+        MIN(age) AS idade_minima,
+        MAX(age) AS idade_maxima
+FROM medical.segurados;
+
+--- 4 query: Identificar o numero de segurados por regiao -----
+
+SELECT region, COUNT(*) AS numero_segurados
+FROM medical.segurados
+GROUP BY region
+ORDER BY numero_segurados DESC;
+
+--- 5 query: Mudar as indicacoes da coluna smoker e arrendondar o custo_medio agrupando por smoker (fumantes)---
+
+SELECT 
+    CASE
+        WHEN smoker = 'yes' THEN 'sim'
+        WHEN smoker = 'no'  THEN 'nao'
+        ELSE 'desconhecido'
+END AS fumante,
+ROUND ( AVG (charges),2) AS custo_medio
+FROM medical.segurados
+GROUP BY smoker ;
+
+
+SELECT 
+    CASE
+        WHEN smoker = 'yes' THEN 'sim'
+        WHEN smoker = 'no'  THEN 'nao'
+        ELSE 'desconhecido'
+END AS fumante,
+ROUND ( AVG (charges),2) AS custo_medio
+FROM medical.segurados
+GROUP BY smoker
+ORDER BY custo_medio DESC;
+
+
+--- 6 query: Contanto o numero de segurados com base na quantidade de filhos-----
+
+
+SELECT children, COUNT(*) AS numero_segurados
+FROM medical.segurados
+GROUP BY children
+ORDER BY children ASC;
+
+---- 7 query: Calculando o custo_medio por regiao.-----
+
+SELECT region, ROUND (AVG (charges),2) AS custo_medio
+FROM medical.segurados
+GROUP BY region
+ORDER BY REGION DESC;
+
+
+---- 8 query: Identificando os segurados com os custos mais altos----
+
+SELECT *
+FROM medical.segurados
+WHERE charges = (SELECT MAX(charges) FROM medical.segurados);
+
+----- 9 query: Identificando o segurado mais jovem em cada região----
+
+SELECT DISTINCT ON (region)
+  region,
+  age,
+  sex,
+  bmi,
+  children,
+  smoker,
+  charges
+FROM medical.segurados
+ORDER BY region, age;
